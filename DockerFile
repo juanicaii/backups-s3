@@ -1,0 +1,23 @@
+# Usa una imagen base de Alpine Linux (pequeña y rápida)
+FROM alpine:latest
+
+# Instalar rclone, bash y cron
+RUN apk add --no-cache rclone bash 
+
+# Crear los directorios para los logs y backups
+RUN mkdir -p /backup /logs
+
+# Copiar el script de backup al contenedor
+COPY backup.sh /backup.sh
+
+# Copiar el archivo crontab al contenedor
+COPY crontab.txt /etc/crontabs/root
+
+# Dar permisos de ejecución al script de backup
+RUN chmod +x /backup.sh
+
+# Exponer el directorio de logs
+VOLUME /logs
+
+# Iniciar cron cuando arranca el contenedor
+CMD ["crond", "-f"]
